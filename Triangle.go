@@ -1,23 +1,23 @@
 
 package math3d
+import (
+//"fmt"
+	"fmt"
+)
 
 type Triangle struct {
 
-	Vertices 	[3] *Vertex
+	Vertices 	[]*Vertex
 	uv1	Vector2
 	uv2 Vector2
 	uv3 Vector2
 
-	id 			int
+	Id 			int
 	Normal		Vector3
+	Removed		bool
 }
 
 
-func (this Triangle) SetVertices(v0 *Vertex, v1 *Vertex, v2 *Vertex) {
-	this.Vertices[0] = v0
-	this.Vertices[1] = v1
-	this.Vertices[2] = v2
-}
 
 func (t Triangle) SetUV(uv1 Vector2, uv2 Vector2, uv3 Vector2) {
 	t.uv1 = uv1
@@ -27,11 +27,10 @@ func (t Triangle) SetUV(uv1 Vector2, uv2 Vector2, uv3 Vector2) {
 
 // Pointer based comparison (will it work?)
 
-func (t Triangle) HasVertex(tv *Vector3) (bool) {
+func (t Triangle) HasVertex(tv *Vertex) (bool) {
 
-	for _,v:= range t.Vertices {
-
-		if v.Position == tv {
+	for i:=0; i< len(t.Vertices); i++ {
+		if t.Vertices[i].Id == tv.Id {
 			return true
 		}
 	}
@@ -40,14 +39,27 @@ func (t Triangle) HasVertex(tv *Vector3) (bool) {
 }
 
 
-func (this Triangle) ReplaceVertex(vOld *Vector3, vNew *Vector3, newTexUV *Vector2 )() {
 
 
-	for _,v:= range this.Vertices {
-		if v.Position == vOld {
-			v.Position = vNew
-			// update UV code here
+func (this Triangle) ReplaceVertex(vOld *Vertex, vNew *Vertex, debug bool)() {
+
+	worked := false
+
+	for t:=0; t<len(this.Vertices); t++ {
+		if (debug) {
+			fmt.Printf("(%d) OLD:NEW = %d:%d. .... Now checking %d\r\n", t, vOld.Id, vNew.Id, this.Vertices[t].Id)
 		}
+		if this.Vertices[t].Id == vOld.Id {
+			fmt.Println("**YES** found a match and replace the vertex")
+			*this.Vertices[t] = *vNew
+			worked = true
+			break
+		}
+	}
+
+	if debug {
+		worked = worked
+//		fmt.Printf("Vertex. %d  ->  %d\r\n was stuff replaced: %t\r\n", vOld.Id, vNew.Id, worked)
 	}
 
 	this.CalcNormal()
@@ -77,14 +89,3 @@ func (this Triangle) CalcNormal() (Vector3) {
 
 }
 
-/*
-
-func (t Triangle) HasVertex(v Vector3) (bool) {
-
-	if reflect.DeepEqual(t.p1, v) {
-		return true
-	}
-
-	return true
-}
-*/

@@ -7,6 +7,8 @@ type Vertex struct {
 	Position 	*Vector3
 	Cost 		float64
 	Id 			int
+	Collapse	*Vertex
+	Removed		bool
 }
 
 
